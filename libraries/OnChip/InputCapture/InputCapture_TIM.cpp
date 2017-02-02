@@ -150,8 +150,8 @@ InputCapture_TIM::InputCapture_TIM(TIM_TypeDef *TIMx, u16 minHz, bool enCh1, boo
 	if(enCh4)
 		GPIO_PinAFConfig(_port2,_ch4PinSource,_GPIOAF); //¸´ÓÃ
 	//Timer Initialize
-	u32 res = 72000000 % minHz;	
-	u32 multi = 72000000/minHz;
+	u32 res = 84000000 % minHz;	
+	u32 multi = 84000000/minHz;
 	if(res>minHz/2) multi++;
 	_prescaler = 1;
 	_period = multi;
