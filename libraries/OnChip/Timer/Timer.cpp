@@ -7,33 +7,38 @@ Timer::Timer(TIM_TypeDef *timer, u16 second, u16 millisecond, u16 microsecond, u
 	TIM_TimeBaseInitTypeDef TIM_BaseInitStructure;
 	mTempTimer = timer;
 	NVIC_InitTypeDef NVIC_InitStructure;
-	Conversion(second, millisecond, microsecond);
 
 	if (timer == TIM1)
 	{
+		mTimeFre = 168;
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
 		timerIrqChannel = TIM1_UP_TIM10_IRQn;
-
 	}
 	else if (timer == TIM2)
 	{
+		mTimeFre = 84;
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
 		timerIrqChannel = TIM2_IRQn;
 	}
 	else if (timer == TIM3)
 	{
+		mTimeFre = 84;
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
 		timerIrqChannel = TIM3_IRQn;
 	}
 	else if (timer == TIM4)
 	{
+		mTimeFre = 84;
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
 		timerIrqChannel = TIM4_IRQn;
 	}
-	else
+	else if (timer == TIM5)
 	{
-
+		mTimeFre = 84;
+		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);
+		timerIrqChannel = TIM5_IRQn;
 	}
+	Conversion(second, millisecond, microsecond);
 //	TIM_InternalClockConfig(timer);
 
 //	TIM_DeInit(timer);//将寄存器重设为缺省值
@@ -107,16 +112,16 @@ void Timer::Conversion(u16 s, u16 ms, u16 us) //将时分秒转化为预分频�
 	tempPsc = mPsc;	//保存初次计算结果
 
 	//	当计算出的ARR没有小数且ARR小于0xffff时退出循环，如果mps大于了65535 也退出
-	while (((time * 84) % mPsc != 0 || tempArr > 0xffff) && mPsc <= 65535)//如果计算的初值是个整数，或者没有找到可以计算出整数的分频数
+	while (((time * mTimeFre) % mPsc != 0 || tempArr > 0xffff) && mPsc <= 65535)//如果计算的初值是个整数，或者没有找到可以计算出整数的分频数
 	{
 		mPsc++;
-		tempArr = (time * 84) / mPsc; //计算出初值
+		tempArr = (time * mTimeFre) / mPsc; //计算出初值
 	}
 
 	if (mPsc >= 65535) //如果找到能够整除的分频值，则选用精度最大的分频值
 	{
 		mPsc = tempPsc;
-		tempArr = (time * 84) / mPsc; //计算出初值
+		tempArr = (time * mTimeFre) / mPsc; //计算出初值
 	}
 	else
 		mArr = tempArr;

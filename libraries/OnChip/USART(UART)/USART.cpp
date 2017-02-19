@@ -15,16 +15,16 @@
 
 USART::USART(USART_TypeDef* USARTx, u32 baud, u8 priGroup, u8 prePri, u8 subPri, bool remap, u16 parity, u16 wordLen, u16 stopBits)
 {
-	mUSARTx   = USARTx;   //USARTx
+	mUSARTx = USARTx;   //USARTx
 	mBaudrate = baud;     //baudrate of usart
 	mPriGroup = priGroup; //priority group
-	mPrePri 	= prePri;   //preemption priority
-	mSubPri 	= subPri;   //sub priority
-	mRemap		= remap;    //gpio remap flag
-	mParity 	= parity;   //parity of usart
-	mWordLen  = wordLen;  //world length of usart
+	mPrePri = prePri;   //preemption priority
+	mSubPri = subPri;   //sub priority
+	mRemap = remap;    //gpio remap flag
+	mParity = parity;   //parity of usart
+	mWordLen = wordLen;  //world length of usart
 	mStopBits = stopBits; //stop bits of usart
-	mPrecision  = 3;
+	mPrecision = 3;
 	mTxOverflow = 0;
 	mRxOverflow = 0;
 
@@ -33,7 +33,8 @@ USART::USART(USART_TypeDef* USARTx, u32 baud, u8 priGroup, u8 prePri, u8 subPri,
 		mIRQn = USART1_IRQn;                                           //USART IRQn
 		mGPIOAF = GPIO_AF_USART1;																			 //GPIO AF
 		mUSARTRcc = RCC_APB2Periph_USART1;	                           //USARTx Clock
-		mPort  = (mRemap ? GPIOB 			: GPIOA			);   //GPIO Port
+		mTxPort = (mRemap ? GPIOB : GPIOA);   //GPIO Port
+		mRxPort = (mRemap ? GPIOB : GPIOA);   //GPIO Port
 		mTxPin = (mRemap ? GPIO_Pin_6 : GPIO_Pin_9);   //Tx Pin
 		mRxPin = (mRemap ? GPIO_Pin_7 : GPIO_Pin_10);   //Rx Pin
 		mTxPinSource = (mRemap ? GPIO_PinSource6 : GPIO_PinSource9);   //Tx PinSource
@@ -42,8 +43,8 @@ USART::USART(USART_TypeDef* USARTx, u32 baud, u8 priGroup, u8 prePri, u8 subPri,
 
 #ifdef USE_USART1_DMA
 		mDMA_Streamx = DMA2_Stream7;
-		mDMATxCh 		 = DMA_Channel_4;      //DMA Tx Channel
-		mDMAIRQn 		 = DMA2_Stream7_IRQn;  //DMA IRQn
+		mDMATxCh = DMA_Channel_4;      //DMA Tx Channel
+		mDMAIRQn = DMA2_Stream7_IRQn;  //DMA IRQn
 		mDMATCFlag = DMA_FLAG_TCIF7;     //DMA TC Mask
 		mDMAGLFlag = DMA_IT_TCIF7 | DMA_IT_HTIF7 | DMA_IT_TEIF7 | DMA_IT_FEIF7;         //DMA IT GL mask
 		pCOM1 = this;
@@ -58,7 +59,8 @@ USART::USART(USART_TypeDef* USARTx, u32 baud, u8 priGroup, u8 prePri, u8 subPri,
 		mIRQn = USART2_IRQn;                                           //USART IRQn
 		mGPIOAF = GPIO_AF_USART2;																			 //GPIO AF
 		mUSARTRcc = RCC_APB1Periph_USART2;	                           //USARTx Clock
-		mPort  = (mRemap ? GPIOD 			: GPIOA);   //GPIO Port
+		mTxPort = (mRemap ? GPIOD : GPIOA);   //GPIO Port
+		mRxPort = (mRemap ? GPIOD : GPIOA);   //GPIO Port
 		mTxPin = (mRemap ? GPIO_Pin_5 : GPIO_Pin_2);   //Tx Pin
 		mRxPin = (mRemap ? GPIO_Pin_6 : GPIO_Pin_3);    //Rx Pin
 		mTxPinSource = (mRemap ? GPIO_PinSource5 : GPIO_PinSource2);   //Tx PinSource
@@ -73,7 +75,7 @@ USART::USART(USART_TypeDef* USARTx, u32 baud, u8 priGroup, u8 prePri, u8 subPri,
 		mDMAGLFlag = DMA_IT_TCIF6 | DMA_IT_HTIF6 | DMA_IT_TEIF6 | DMA_IT_FEIF6;         //DMA IT GL mask
 		pCOM2 = this;
 #endif
-		
+
 #ifdef USE_USART2
 		pCOM2 = this;
 #endif
@@ -83,7 +85,8 @@ USART::USART(USART_TypeDef* USARTx, u32 baud, u8 priGroup, u8 prePri, u8 subPri,
 		mIRQn = USART3_IRQn;                                           //USART IRQn
 		mGPIOAF = GPIO_AF_USART3;																			 //GPIO AF
 		mUSARTRcc = RCC_APB1Periph_USART3;	                           //USARTx Clock
-		mPort  = (mRemap ? GPIOC 			 : GPIOB);   //GPIO Port
+		mTxPort = (mRemap ? GPIOC : GPIOB);   //GPIO Port
+		mRxPort = (mRemap ? GPIOC : GPIOB);   //GPIO Port
 		mTxPin = (mRemap ? GPIO_Pin_10 : GPIO_Pin_10);   //Tx Pin
 		mRxPin = (mRemap ? GPIO_Pin_11 : GPIO_Pin_11);   //Rx Pin
 		mTxPinSource = (mRemap ? GPIO_PinSource10 : GPIO_PinSource10);   //Tx PinSource
@@ -98,7 +101,7 @@ USART::USART(USART_TypeDef* USARTx, u32 baud, u8 priGroup, u8 prePri, u8 subPri,
 		mDMAGLFlag = DMA_IT_TCIF4 | DMA_IT_HTIF4 | DMA_IT_TEIF4 | DMA_IT_FEIF4;         //DMA IT GL mask
 		pCOM3 = this;
 #endif
-		
+
 #ifdef USE_USART3
 		pCOM3 = this;
 #endif
@@ -108,7 +111,8 @@ USART::USART(USART_TypeDef* USARTx, u32 baud, u8 priGroup, u8 prePri, u8 subPri,
 		mIRQn = UART4_IRQn;                                           //USART IRQn
 		mGPIOAF = GPIO_AF_UART4;																		  //GPIO AF
 		mUSARTRcc = RCC_APB1Periph_UART4;	                            //USARTx Clock
-		mPort  = (mRemap ? GPIOA 		  : GPIOC);   //GPIO Port
+		mTxPort = (mRemap ? GPIOA : GPIOC);   //GPIO Port
+		mRxPort = (mRemap ? GPIOA : GPIOC);   //GPIO Port
 		mTxPin = (mRemap ? GPIO_Pin_0 : GPIO_Pin_10);   //Tx Pin
 		mRxPin = (mRemap ? GPIO_Pin_1 : GPIO_Pin_11);   //Rx Pin
 		mTxPinSource = (mRemap ? GPIO_PinSource0 : GPIO_PinSource10);   //Tx PinSource
@@ -123,7 +127,7 @@ USART::USART(USART_TypeDef* USARTx, u32 baud, u8 priGroup, u8 prePri, u8 subPri,
 		mDMAGLFlag = DMA_IT_TCIF4 | DMA_IT_HTIF4 | DMA_IT_TEIF4 | DMA_IT_FEIF4;         //DMA IT GL mask
 		pCOM4 = this;
 #endif
-		
+
 #ifdef USE_UART4
 		pCOM4 = this;
 #endif
@@ -133,12 +137,13 @@ USART::USART(USART_TypeDef* USARTx, u32 baud, u8 priGroup, u8 prePri, u8 subPri,
 		mIRQn = UART5_IRQn;                                           //USART IRQn
 		mGPIOAF = GPIO_AF_UART5;																			//GPIO AF
 		mUSARTRcc = RCC_APB1Periph_UART5;	                            //USARTx Clock
-		mPort  = (mRemap ? GPIOC			 : GPIOC);   //GPIO Port
+		mTxPort = (mRemap ? GPIOC : GPIOC);   //GPIO Port
+		mRxPort = (mRemap ? GPIOC : GPIOD);   //GPIO Port
 		mTxPin = (mRemap ? GPIO_Pin_10 : GPIO_Pin_12);   //Tx Pin
-		mRxPin = (mRemap ? GPIO_Pin_11 : GPIO_Pin_5);    //Rx Pin
+		mRxPin = (mRemap ? GPIO_Pin_11 : GPIO_Pin_2);    //Rx Pin
 		mTxPinSource = (mRemap ? GPIO_PinSource10 : GPIO_PinSource12);   //Tx PinSource
 		mRxPinSource = (mRemap ? GPIO_PinSource11 : GPIO_PinSource15);   //Rx PinSource
-		mGPIORcc = (mRemap ? RCC_AHB1Periph_GPIOC : RCC_AHB1Periph_GPIOC);   //GPIO Clock
+		mGPIORcc = (mRemap ? RCC_AHB1Periph_GPIOC : RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOD);   //GPIO Clock
 
 #ifdef USE_UART5_DMA
 		mDMA_Streamx = DMA1_Stream7;
@@ -148,7 +153,7 @@ USART::USART(USART_TypeDef* USARTx, u32 baud, u8 priGroup, u8 prePri, u8 subPri,
 		mDMAGLFlag = DMA_IT_TCIF7 | DMA_IT_HTIF7 | DMA_IT_TEIF7 | DMA_IT_FEIF7;         //DMA IT GL mask
 		pCOM5 = this;
 #endif
-		
+
 #ifdef USE_UART5
 		pCOM5 = this;
 #endif
@@ -158,7 +163,8 @@ USART::USART(USART_TypeDef* USARTx, u32 baud, u8 priGroup, u8 prePri, u8 subPri,
 		mIRQn = USART6_IRQn;                                           //USART IRQn
 		mGPIOAF = GPIO_AF_USART6;																			 //GPIO AF
 		mUSARTRcc = RCC_APB2Periph_USART6;	                           //USARTx Clock
-		mPort  = (mRemap ? GPIOC			 : GPIOC);   //GPIO Port
+		mTxPort = (mRemap ? GPIOC : GPIOC);   //GPIO Port
+		mRxPort = (mRemap ? GPIOC : GPIOC);   //GPIO Port
 		mTxPin = (mRemap ? GPIO_Pin_10 : GPIO_Pin_6);   //Tx Pin
 		mRxPin = (mRemap ? GPIO_Pin_11 : GPIO_Pin_7);   //Rx Pin
 		mTxPinSource = (mRemap ? GPIO_PinSource10 : GPIO_PinSource6);   //Tx PinSource
@@ -173,14 +179,13 @@ USART::USART(USART_TypeDef* USARTx, u32 baud, u8 priGroup, u8 prePri, u8 subPri,
 		mDMAGLFlag = DMA_IT_TCIF7 | DMA_IT_HTIF7 | DMA_IT_TEIF7 | DMA_IT_FEIF7;         //DMA IT GL mask
 		pCOM6 = this;
 #endif
-		
+
 #ifdef USE_USART6
 		pCOM6 = this;
 #endif
 	}
 
 	Initialize();
-
 }
 
 void USART::Initialize()
@@ -200,17 +205,19 @@ void USART::InitGPIO()
 		RCC_APB2PeriphClockCmd(mUSARTRcc, ENABLE);
 	else
 		RCC_APB1PeriphClockCmd(mUSARTRcc, ENABLE);
-	
-	GPIO_PinAFConfig(mPort, mTxPinSource, mGPIOAF); //复用
-	GPIO_PinAFConfig(mPort, mRxPinSource, mGPIOAF); //复用
+
+	GPIO_PinAFConfig(mTxPort, mTxPinSource, mGPIOAF); //复用
+	GPIO_PinAFConfig(mRxPort, mRxPinSource, mGPIOAF); //复用
 
 	GPIO_InitTypeDef GPIO_InitStructure;
-	GPIO_InitStructure.GPIO_Pin = mTxPin | mRxPin; //GPIOA
+	GPIO_InitStructure.GPIO_Pin = mTxPin; //GPIOA
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;		 //复用功能
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;//速度50MHz
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; 	 //推挽复用输出
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;		 //上拉
-	GPIO_Init(mPort, &GPIO_InitStructure);						 //初始化
+	GPIO_Init(mTxPort, &GPIO_InitStructure);						 //初始化
+	GPIO_InitStructure.GPIO_Pin = mRxPin; //GPIOA
+	GPIO_Init(mRxPort, &GPIO_InitStructure);						 //初始化
 }
 
 void USART::InitNVIC()
@@ -233,8 +240,8 @@ void USART::InitNVIC()
 #ifdef USE_USART_DMA
 	NVIC_InitStructure.NVIC_IRQChannel = mDMAIRQn;//DMA IRQ
 	NVIC_Init(&NVIC_InitStructure);
-//	mDMATxCh->CCR |= DMA_IT_TC;  //Enable DMA TX Channel TCIT 
-//	mDMATxCh->CCR |= DMA_IT_TE;  //Enable DMA TX Channel TEIT
+	//	mDMATxCh->CCR |= DMA_IT_TC;  //Enable DMA TX Channel TCIT 
+	//	mDMATxCh->CCR |= DMA_IT_TE;  //Enable DMA TX Channel TEIT
 #endif
 }
 
@@ -287,9 +294,9 @@ bool USART::SendBytes(u8 txData[], u16 size)
 	USART_ClearITPendingBit(mUSARTx, USART_IT_TC); //Clear TC, otherwise the first byte may not able to send out
 	USART_ClearITPendingBit(mUSARTx, USART_IT_TXE); //Clear TC, otherwise the first byte may not able to send out
 	USART_ITConfig(mUSARTx, USART_IT_TC, ENABLE);  //Enable TC, going to send data
-//USART_ITConfig(mUSARTx, USART_IT_TXE, ENABLE);  //Enable TC, going to send data
+	//USART_ITConfig(mUSARTx, USART_IT_TXE, ENABLE);  //Enable TC, going to send data
 	USART_GetFlagStatus(mUSARTx, USART_FLAG_TC);   //read SR to clear flag, otherwise the first byte may not able to send out
-//USART_GetFlagStatus(mUSARTx, USART_FLAG_TXE);   //read SR to clear flag, otherwise the first byte may not able to send out
+	//USART_GetFlagStatus(mUSARTx, USART_FLAG_TXE);   //read SR to clear flag, otherwise the first byte may not able to send out
 	static u8 data = 0;
 	mTxBuf.Get(data);                              //get one byte data from tx buffer
 	USART_SendData(mUSARTx, data);                  //send one byte data
@@ -373,8 +380,8 @@ USART& USART::operator<<(double val)
 			t = t / 10;
 		}
 	} while (t || len < mPrecision + 2);
-//if(len==3) data[20-(++len)] = '.';
-//if(len==4) data[20-(++len)] = '0';
+	//if(len==3) data[20-(++len)] = '.';
+	//if(len==4) data[20-(++len)] = '0';
 	if (sign == 1)
 		data[20 - (++len)] = '-';
 	SendBytes(data + 20 - len, len);
@@ -388,6 +395,17 @@ USART& USART::operator<<(const char* pStr)
 		++length;
 	}
 	SendBytes((u8*)pStr, length);
+	return *this;
+}
+
+USART& USART::operator<<(u8* pStr)
+{
+	//	unsigned int length = 0;
+	//	for (int i = 0; pStr[i] != '\0'; ++i)
+	//	{
+	//		++length;
+	//	}
+	SendBytes((u8*)pStr, strlen((char *)pStr));
 	return *this;
 }
 
@@ -480,10 +498,10 @@ void USART::InitDMA()
 
 void USART::DMAIRQ()
 {
-	if (DMA_GetFlagStatus(mDMA_Streamx, DMA_FLAG_TCIF4) == SET) //DMA Tx Complete
+	if (DMA_GetFlagStatus(mDMA_Streamx, mDMATCFlag) == SET) //DMA Tx Complete
 	{
-		DMA_ClearITPendingBit(mDMA_Streamx, DMA_IT_TCIF4 | DMA_IT_HTIF4 | DMA_IT_TEIF4 | DMA_IT_FEIF4);   //Clear DMA global interrupt flag
-		DMA_ClearFlag(mDMA_Streamx, DMA_FLAG_TCIF4);           //Clear DMA Tx complete flag
+		DMA_ClearITPendingBit(mDMA_Streamx, mDMAGLFlag);   //Clear DMA global interrupt flag
+		DMA_ClearFlag(mDMA_Streamx, mDMATCFlag);           //Clear DMA Tx complete flag
 		DMA_Cmd(mDMA_Streamx, DISABLE);           //close dma
 
 		if (mTxBuf.Size() > 0)

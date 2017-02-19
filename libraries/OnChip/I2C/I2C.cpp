@@ -20,7 +20,7 @@ I2C::I2C(I2C_TypeDef* i2c, u32 speed, u8 remap, u8 priGroup, u8 preEvt, u8 subEv
 	mErrorCnt = -1;           //no i2c error
 	if (mI2C == I2C1)         //I2C1
 	{
-		if (mRemap)                      //Remap IO
+		if (mRemap)                     //Remap IO
 		{
 			mSCLPinSource = GPIO_PinSource8;
 			mSDAPinSource = GPIO_PinSource9;
@@ -83,7 +83,7 @@ I2C::I2C(I2C_TypeDef* i2c, u32 speed, u8 remap, u8 priGroup, u8 preEvt, u8 subEv
 #endif
 	}
 	//set prioirty group                              // =============================================================
-																										// | NVIC_PriorityGroup   | PreemptionPriority |   SubPriority  | 
+	// | NVIC_PriorityGroup   | PreemptionPriority |   SubPriority  | 
 	switch (priGroup)                                 // |------------------------------------------------------------|
 	{                                                 // | NVIC_PriorityGroup_0 | 0 bit   |   0      |  4 bit | 0~15  |
 	case 0: mPriGroup = NVIC_PriorityGroup_0; break;  // |----------------------|---------|----------|----------------|
@@ -93,71 +93,64 @@ I2C::I2C(I2C_TypeDef* i2c, u32 speed, u8 remap, u8 priGroup, u8 preEvt, u8 subEv
 	case 4: mPriGroup = NVIC_PriorityGroup_4; break;  // |------------------------------------------------------------|
 	default:mPriGroup = NVIC_PriorityGroup_3; break;  // | NVIC_PriorityGroup_3 | 3 bit   |   0~7    |  1 bit | 0~1   |
 	}                                                 // |----------------------|---------|----------|----------------|    
-																										// | NVIC_PriorityGroup_4 | 4 bit   |   0~15   |  0 bit | 0     |                                                              
+	// | NVIC_PriorityGroup_4 | 4 bit   |   0~15   |  0 bit | 0     |                                                              
 	//Initialize I2C, NVIC, etc.....                  // ==============================================================
 	Initialize();
 }
 bool I2C::Reset()
 {
 	mI2C->CR1 |= I2C_CR1_SWRST;   //Start reset I2C 
+	for (volatile u16 i = 0; i < 100; i++);      //             ___
 	mI2C->CR1 &= ~I2C_CR1_SWRST;  //Stop reset I2C
-	mI2C->CR1 &= ~I2C_CR1_PE; 		//disable I2C		
-	RCC->APB1RSTR |= mI2CRcc;     //start reset i2c clock
-	RCC->APB1RSTR &= ~mI2CRcc;    //end reset i2c clock
-	RCC->APB1ENR |= mI2CRcc;      //enable i2c clock
+	mI2C->CR1 &= ~I2C_CR1_PE;
+	I2C_SoftwareResetCmd(mI2C, ENABLE);
+	I2C_SoftwareResetCmd(mI2C, DISABLE);
+	I2C_Cmd(mI2C, DISABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+	RCC_APB1PeriphResetCmd(mI2CRcc, ENABLE);
+	RCC_APB1PeriphResetCmd(mI2CRcc, DISABLE);
+	RCC_APB1PeriphClockCmd(mI2CRcc, ENABLE);
 
 	//Check and Fix I2C Bus Busy problem
 	u8 timeoutCnt = 0;
 	while (I2C_GetFlagStatus(mI2C, I2C_FLAG_BUSY) && timeoutCnt < 20)
 	{
-		RCC_APB1PeriphClockCmd(mI2CRcc, DISABLE);  //Close I2C Device
-		InitGPIO(GPIO_OType_PP);               //Initialize GPIO for Software I2C
+		RCC_APB1PeriphClockCmd(mI2CRcc, DISABLE);  	 //Close I2C Device
+		RCC_APB2PeriphClockCmd(mSDAGPIORcc | mSCLGPIORcc, ENABLE);     //GPIO Clock
+		InitGPIO(GPIO_Mode_OUT, GPIO_OType_PP);      //Initialize GPIO for Software I2C
 		GPIO_ResetBits(mSCLPort, mSCLPin);           //
 		GPIO_ResetBits(mSDAPort, mSDAPin);           //To Generate Stop Signal by Pin simulation
-		for (volatile u16 i = 0; i < 100; i++);          //         _______
+		for (volatile u16 i = 0; i < 100; i++);      //         _______
 		GPIO_SetBits(mSCLPort, mSCLPin);             //SCL: ___|
-		for (volatile u16 i = 0; i < 100; i++);          //             ___
+		for (volatile u16 i = 0; i < 100; i++);      //             ___
 		GPIO_SetBits(mSDAPort, mSDAPin);             //SDA: _______|
-		for (volatile u16 i = 0; i < 100; i++);	        //
-		InitGPIO(GPIO_OType_OD);          //Initialize GPIO for I2C Busy detect
-		RCC->APB1RSTR |= mI2CRcc;                 //start reset i2c clock
-		RCC->APB1RSTR &= ~mI2CRcc;                //end reset i2c clock
-		RCC->APB1ENR |= mI2CRcc;                  //enable i2c clock
+		for (volatile u16 i = 0; i < 100; i++);	     //
+		InitGPIO(GPIO_Mode_IN, GPIO_OType_OD);       //Initialize GPIO for I2C Busy detect
+		RCC_APB1PeriphResetCmd(mI2CRcc, ENABLE);
+		RCC_APB1PeriphResetCmd(mI2CRcc, DISABLE);
+		RCC_APB1PeriphClockCmd(mI2CRcc, ENABLE);
 		++timeoutCnt;
 	}
 	if (timeoutCnt >= 20) return false;
 	return true;
 }
-void I2C::InitGPIO(GPIOOType_TypeDef mGPIO_OType)
+void I2C::InitGPIO(GPIOMode_TypeDef mGPIO_MODE, GPIOOType_TypeDef mGPIOType)
 {
-	GPIOMode_TypeDef mGPIO_MODE = GPIO_Mode_IN;
 	RCC_APB2PeriphClockCmd(mSDAGPIORcc | mSCLGPIORcc, ENABLE);     //GPIO Clock
-	RCC_APB1PeriphClockCmd(mI2CRcc, ENABLE);
 
-	GPIO_PinAFConfig(mSCLPort, mSCLPinSource, mGPIOAF); //复用
-	GPIO_PinAFConfig(mSDAPort, mSDAPinSource, mGPIOAF); //复用
-	if(mGPIO_OType == GPIO_OType_PP)
-	{
-		mGPIO_MODE = GPIO_Mode_AF;
-	}
-	
 	GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_InitStructure.GPIO_Pin = mSCLPin | mSDAPin;          //Initialize I2Cx SCL SDA Pin
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;         //Set GPIO frequency to 50MHz
 	GPIO_InitStructure.GPIO_Mode = mGPIO_MODE;
-	GPIO_InitStructure.GPIO_OType = mGPIO_OType;
+	GPIO_InitStructure.GPIO_OType = mGPIOType;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_InitStructure.GPIO_Pin = mSCLPin;          					//Initialize I2Cx SCL Pin
 	GPIO_Init(mSCLPort, &GPIO_InitStructure);
-
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;         //Set GPIO frequency to 50MHz
-	GPIO_InitStructure.GPIO_Mode = mGPIO_MODE;
-	GPIO_InitStructure.GPIO_OType = mGPIO_OType;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_InitStructure.GPIO_Pin = mSDAPin;          					//Initialize I2Cx SDA Pin
-	GPIO_Init(mSDAPort, &GPIO_InitStructure);
 }
 void I2C::InitI2C()
 {
+
+	GPIO_PinAFConfig(mSCLPort, mSCLPinSource, mGPIOAF); //复用
+	GPIO_PinAFConfig(mSDAPort, mSDAPinSource, mGPIOAF); //复用
 	I2C_InitTypeDef I2C_InitStructure;
 	I2C_InitStructure.I2C_ClockSpeed = mSpeed;                 //I2C_ClockSpeed
 	I2C_InitStructure.I2C_Mode = I2C_Mode_I2C;                 //I2C_Mode
@@ -166,6 +159,7 @@ void I2C::InitI2C()
 	I2C_InitStructure.I2C_Ack = I2C_Ack_Enable;                //I2C_Ack
 	I2C_InitStructure.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;  //I2C_AcknowledgedAddress
 	I2C_Init(mI2C, &I2C_InitStructure);//iic
+	I2C_Cmd(mI2C, ENABLE);
 }
 void I2C::InitNVIC()
 {
@@ -190,7 +184,7 @@ bool I2C::Initialize()
 		mState = I2C_STATE_ERROR;
 		return false; //Reset RCC,I2C, release I2C Bus
 	}
-	InitGPIO(GPIO_OType_OD); 	 //GPIO
+	InitGPIO(GPIO_Mode_AF, GPIO_OType_OD); 	 //GPIO
 	InitI2C();                 //I2C
 	InitNVIC();                //NVIC
 	mCmdBank.Clear();          //Clear Command
@@ -343,7 +337,4 @@ void I2C::ErrorIRQ()
 	mI2C->CR1 &= ~I2C_CR1_SWRST;
 	mState = I2C_STATE_ERROR;
 }
-
-
-
 

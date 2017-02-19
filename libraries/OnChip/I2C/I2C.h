@@ -24,51 +24,51 @@ struct I2C_Command
 
 class I2C
 {
-	private:
-		I2C_TypeDef* mI2C;        //i2c device name
-		GPIO_TypeDef*mSDAPort;     	//GPIO port
-		GPIO_TypeDef*mSCLPort;     	//GPIO port
-		u32          mSpeed;      //i2c bus speed
-		bool         mRemap;      //whether gpio pin remap	
-		u16          mSDAPin;     //gpio pin of sda
-	  u16          mSCLPin;     //gpio pin of scl
-		u16          mSDAPinSource;    //SDA gpio pinSource
-		u16          mSCLPinSource;    //SCL gpio pinSource
-		u32          mI2CRcc;     //i2c clock
-		u32          mSDAGPIORcc; //GPIO Clock
-		u32          mSCLGPIORcc; //GPIO Clock
-		u8           mGPIOAF;   	//GPIO AF
-	  u32          mPriGroup;   //Priority Group
-		u8           mEvtIRQ;     //i2c event irqn
-	  u8           mErrIRQ;     //i2c error irqn
-		u8           mEvtPre;     //event preemption priority
-	  u8           mEvtSub;     //event sub priority
-	  u8           mErrPre;     //error preemption priority
-	  u8           mErrSub;     //error sub priority
-		u8           mState;      //i2c bus state flag
-		FIFOBuffer<I2C_Command,I2C_QUEUE_SIZE> mCmdBank;
-	
-		u8           mDataIdx;    //index of Tx / Rx data
-		u8           mI2CDirection; //I2C Direction (Tx / Rx)
-		I2C_Command  mCurCmd;     //Current I2C Command
-		int          mErrorCnt;   //I2C Bus error counter
-	private:
-		bool Reset();
-		void InitGPIO(GPIOOType_TypeDef gpioMode);
-		void InitI2C();
-		void InitNVIC();
-		bool StartNextCmd();
-	public:
-		I2C(I2C_TypeDef* i2c, u32 speed=400000,u8 remap=0,u8 priGroup=3,u8 preEvt=0,u8 subEvt=0,u8 preErr=0,u8 subErr=0);
-		bool Initialize();
-		bool AddCommand(u8 slaveAddr,u8 txData[], u8 txNum, u8 rxData[], u8 rxNum, Sensor *pDevice, bool isTaskTail);
-		bool Start();
-		bool IsHealthy();
-		bool IsFree();
-		bool WaitFree(u16 ms=2);
-		void EventIRQ();
-		void ErrorIRQ();
-		int I2CErrors() { return mErrorCnt; }
+private:
+	I2C_TypeDef* mI2C;        //i2c device name
+	GPIO_TypeDef*mSDAPort;   	//GPIO port
+	GPIO_TypeDef*mSCLPort;    //GPIO port
+	u32          mSpeed;      //i2c bus speed
+	bool         mRemap;      //whether gpio pin remap	
+	u16          mSDAPin;     //gpio pin of sda
+	u16          mSCLPin;     //gpio pin of scl
+	u16          mSDAPinSource;    //SDA gpio pinSource
+	u16          mSCLPinSource;    //SCL gpio pinSource
+	u32          mI2CRcc;     //i2c clock
+	u32          mSDAGPIORcc; //GPIO Clock
+	u32          mSCLGPIORcc; //GPIO Clock
+	u8           mGPIOAF;   	//GPIO AF
+	u32          mPriGroup;   //Priority Group
+	u8           mEvtIRQ;     //i2c event irqn
+	u8           mErrIRQ;     //i2c error irqn
+	u8           mEvtPre;     //event preemption priority
+	u8           mEvtSub;     //event sub priority
+	u8           mErrPre;     //error preemption priority
+	u8           mErrSub;     //error sub priority
+	u8           mState;      //i2c bus state flag
+	FIFOBuffer<I2C_Command, I2C_QUEUE_SIZE> mCmdBank;
+
+	u8           mDataIdx;    //index of Tx / Rx data
+	u8           mI2CDirection; //I2C Direction (Tx / Rx)
+	I2C_Command  mCurCmd;     //Current I2C Command
+	int          mErrorCnt;   //I2C Bus error counter
+private:
+	bool Reset();
+	void InitGPIO(GPIOMode_TypeDef mGPIO_MODE, GPIOOType_TypeDef mGPIOType);
+	void InitI2C();
+	void InitNVIC();
+	bool StartNextCmd();
+public:
+	I2C(I2C_TypeDef* i2c, u32 speed = 400000, u8 remap = 0, u8 priGroup = 3, u8 preEvt = 0, u8 subEvt = 0, u8 preErr = 0, u8 subErr = 0);
+	bool Initialize();
+	bool AddCommand(u8 slaveAddr, u8 txData[], u8 txNum, u8 rxData[], u8 rxNum, Sensor *pDevice, bool isTaskTail);
+	bool Start();
+	bool IsHealthy();
+	bool IsFree();
+	bool WaitFree(u16 ms = 2);
+	void EventIRQ();
+	void ErrorIRQ();
+	int I2CErrors() { return mErrorCnt; }
 };
 
 #define I2C_STATE_NULL  0x00

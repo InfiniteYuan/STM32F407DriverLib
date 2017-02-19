@@ -34,6 +34,7 @@ extern "C"{
 
 class Timer{
 	private:
+		u16 mTimeFre;
 		u16 mArr;//计数器初值
 		u16 mPsc;//计数器预分频
 		TIM_TypeDef *mTempTimer;//时钟选择

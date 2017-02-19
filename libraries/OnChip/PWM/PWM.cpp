@@ -16,10 +16,12 @@ void PWM::Initialize(TIM_TypeDef *timx, bool enCh1, bool enCh2, bool enCh3, bool
 
 	if (_timx == TIM1)
 	{
+		mTimeFre = 168;
 		_timx_rcc = RCC_APB2Periph_TIM1;
 	}
 	else if (_timx == TIM2)
 	{
+		mTimeFre = 84;
 		_timx_rcc = RCC_APB1Periph_TIM2;
 		_gpio_rcc = RCC_AHB1Periph_GPIOA;
 		_port = GPIOA;
@@ -35,6 +37,7 @@ void PWM::Initialize(TIM_TypeDef *timx, bool enCh1, bool enCh2, bool enCh3, bool
 	}
 	else if (_timx == TIM3)
 	{
+		mTimeFre = 84;
 		_timx_rcc = RCC_APB1Periph_TIM3;
 		_gpio_rcc = RCC_AHB1Periph_GPIOA;
 		_port = GPIOA;
@@ -50,6 +53,7 @@ void PWM::Initialize(TIM_TypeDef *timx, bool enCh1, bool enCh2, bool enCh3, bool
 	}
 	else if (_timx == TIM4)
 	{
+		mTimeFre = 84;
 		_timx_rcc = RCC_APB1Periph_TIM4;
 		_gpio_rcc = RCC_AHB1Periph_GPIOB;
 		_port = GPIOB;
@@ -94,8 +98,8 @@ void PWM::Initialize(TIM_TypeDef *timx, bool enCh1, bool enCh2, bool enCh3, bool
 	GPIO_Init(_port, &GPIO_InitStructure);
 
 	//TIMx
-	u32 res = 84000000 % _frqence;
-	u32 multi = 84000000 / _frqence;
+	u32 res = mTimeFre * 1000000 % _frqence;
+	u32 multi = mTimeFre * 1000000 / _frqence;
 	if (res > _frqence / 2) multi++;
 	_prescaler = 1;
 	_period = multi;
@@ -117,7 +121,6 @@ void PWM::Initialize(TIM_TypeDef *timx, bool enCh1, bool enCh2, bool enCh3, bool
 	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;							//定时器模式
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;	//输出使能
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;			//输出极性:占空比是高电平OR低电平
-
 	TIM_OCInitStructure.TIM_Pulse = 0;													//占空比
 	if (_enCh1) TIM_OC1Init(_timx, &TIM_OCInitStructure);//初始化TIM4-通道1~4
 	if (_enCh2) TIM_OC2Init(_timx, &TIM_OCInitStructure);

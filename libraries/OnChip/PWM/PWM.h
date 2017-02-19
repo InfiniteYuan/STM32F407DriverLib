@@ -23,6 +23,7 @@ private:
 	bool _enCh2;          //ch2 enable flag
 	bool _enCh3;          //ch3 enable falg
 	bool _enCh4;          //ch4 enable falg
+	u16 mTimeFre;
 	u16 _frqence;         //freqence 
 	u32 _period;          //period
 	u16 _prescaler;       //prescaler
