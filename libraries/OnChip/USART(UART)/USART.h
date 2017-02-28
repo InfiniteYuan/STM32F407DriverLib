@@ -45,8 +45,8 @@ private:
 	u16            mRxPinSource;    //Rx gpio pinSource
 	u8             mIRQn;     //USART IRQn
 	u8             mGPIOAF;   //GPIO AF
-	GPIO_TypeDef*  mTxPort;     //GPIO port
-	GPIO_TypeDef*  mRxPort;     //GPIO port
+	GPIO_TypeDef*  mTxPort;   //GPIO port
+	GPIO_TypeDef*  mRxPort;   //GPIO port
 	USART_TypeDef* mUSARTx;   //USARTx
 	u32            mGPIORcc;  //GPIO Clock
 	u32            mUSARTRcc; //USART Clock

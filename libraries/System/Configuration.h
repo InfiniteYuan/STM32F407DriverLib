@@ -16,7 +16,7 @@
 
 #define USE_USART_DMA         	 //---USART-use-DMA--//
 #define USE_USART1_DMA        	 //---USART1-use-DMA--//
-//#define USE_USART2_DMA         //---USART2-use-DMA--//
+#define USE_USART2_DMA         //---USART2-use-DMA--//
 //#define USE_USART3_DMA         //---USART3-use-DMA--//
 //#define USE_UART4_DMA          //---UART4-use-DMA--//
 //#define USE_UART5_DMA          //---UART5-use-DMA--//
@@ -28,21 +28,21 @@
 //#define USE_SPI2              	 //----SPI2---//
 //#define USE_SPI3              	 //----SPI3---//
 
-#define USE_SPI_DMA         		 //---SPI-use-DMA--//
-#define USE_SPI1_DMA        		 //---SPI1-use-DMA--//
+//#define USE_SPI_DMA         		 //---SPI-use-DMA--//
+//#define USE_SPI1_DMA        		 //---SPI1-use-DMA--//
 //#define USE_SPI2_DMA        		 //---SPI2-use-DMA--//
 //#define USE_SPI3_DMA        		 //---SPI3-use-DMA--//
 
 //~~~~~~~~~~~~~~~~I2C Congfigure~~~~~~~~~~~~//
 #define USE_I2C               	 //----IIC----//
 #define USE_I2C1             		 //----IIC1---//
-#define USE_I2C2               	 //----IIC2---//
+//#define USE_I2C2               //----IIC2---//
 //#define USE_I2C3               //----IIC3---//
 
-#define USE_I2C_DMA               	 //----IIC----//
-#define USE_I2C1_DMA             		 //----IIC1---//
-#define USE_I2C2_DMA               	 //----IIC2---//
-//#define USE_I2C3_DMA               //----IIC3---//
+//#define USE_I2C_DMA               	 //----IIC----//
+//#define USE_I2C1_DMA             		 //----IIC1---//
+//#define USE_I2C2_DMA               	 //----IIC2---//
+//#define USE_I2C3_DMA               	 //----IIC3---//
 
 //~~~~~~~~~~~~~~~Timer Congfigure~~~~~~~~~~~//
 //#define USE_TIMER              //---Timer---//

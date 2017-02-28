@@ -69,8 +69,8 @@ USART::USART(USART_TypeDef* USARTx, u32 baud, u8 priGroup, u8 prePri, u8 subPri,
 
 #ifdef USE_USART2_DMA
 		mDMA_Streamx = DMA1_Stream6;
-		mDMATxCh = DMA_Channel4;        //DMA Tx Channel
-		mDMAIRQn = DMA1_Stream6_IRQn;   //DMA IRQn
+		mDMATxCh = DMA_Channel_4;        //DMA Tx Channel
+		mDMAIRQn = DMA1_Stream6_IRQn;    //DMA IRQn
 		mDMATCFlag = DMA_FLAG_TCIF6;      //DMA TC Mask
 		mDMAGLFlag = DMA_IT_TCIF6 | DMA_IT_HTIF6 | DMA_IT_TEIF6 | DMA_IT_FEIF6;         //DMA IT GL mask
 		pCOM2 = this;
@@ -415,7 +415,6 @@ bool USART::CheckFrame(DataFrame &df)
 	return mRxBuf.CheckFrame(df);;
 }
 
-
 void USART::IRQ()
 {
 	if (USART_GetFlagStatus(mUSARTx, USART_FLAG_ORE) != RESET)
@@ -495,7 +494,6 @@ void USART::InitDMA()
 	DMA_Cmd(mDMA_Streamx, DISABLE);		                                       //disable DMA			
 }
 
-
 void USART::DMAIRQ()
 {
 	if (DMA_GetFlagStatus(mDMA_Streamx, mDMATCFlag) == SET) //DMA Tx Complete
@@ -524,5 +522,3 @@ void USART::DMAIRQ()
 }
 
 #endif
-
-
