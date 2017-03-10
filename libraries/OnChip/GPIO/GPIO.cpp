@@ -9,7 +9,7 @@ const  uint16_t  GPIO::mPin[16]={GPIO_Pin_0,GPIO_Pin_1,GPIO_Pin_2,GPIO_Pin_3,GPI
 
 								
 //The Constructor of the Class
-GPIO::GPIO(GPIO_TypeDef *port,uint16_t pin,GPIOMode_TypeDef mode,GPIOSpeed_TypeDef speed):mMode(mode),mSpeed(speed),mPort(port),mSelectPin(pin)
+GPIO::GPIO(GPIO_TypeDef *port, uint16_t pin , GPIOMode_TypeDef mode, GPIOOType_TypeDef outtype, GPIOPuPd_TypeDef pupd, GPIOSpeed_TypeDef speed) :mMode(mode), mSpeed(speed), mPort(port), mSelectPin(pin)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	RCC_Configuration();
@@ -25,31 +25,31 @@ void GPIO::RCC_Configuration()
 {
 	if(mPort==GPIOA)
 	{
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
+		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 	}
 	else if(mPort==GPIOB)
 	{
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);
+		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
 	}
 	else if(mPort==GPIOC)
 	{
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE);
+		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
 	}
 	else if(mPort==GPIOD)
 	{
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD,ENABLE);
+		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
 	}
 	else if(mPort==GPIOE)
 	{
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE,ENABLE);
+		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
 	}
 	else if(mPort==GPIOF)
 	{
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF,ENABLE);
+		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);
 	}
 	else if(mPort==GPIOG)
 	{
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG,ENABLE);
+		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);
 	}
 }
 
@@ -86,13 +86,15 @@ void GPIO::Toggle()
 		GPIO_SetBits(mPort,mPin[mSelectPin]);
 }
 
-void GPIO::ChangeMode(GPIOMode_TypeDef mode)
+void GPIO::ChangeMode(GPIOMode_TypeDef mode, GPIOOType_TypeDef outtype, GPIOPuPd_TypeDef pupd, GPIOSpeed_TypeDef speed)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	
 	GPIO_InitStructure.GPIO_Pin = mPin[mSelectPin];
-	GPIO_InitStructure.GPIO_Speed = mSpeed;
 	GPIO_InitStructure.GPIO_Mode = mode;
+	GPIO_InitStructure.GPIO_Speed = speed;
+	GPIO_InitStructure.GPIO_OType = outtype;
+	GPIO_InitStructure.GPIO_PuPd = pupd;
 	GPIO_Init(mPort,&GPIO_InitStructure);
 }
 
