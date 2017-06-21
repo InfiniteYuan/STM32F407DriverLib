@@ -11,8 +11,8 @@ public:
 	float yaw;
 	float throttle;
 public:
-	CraftVector() {roll=0; pitch=0; yaw=0; throttle=0; }
-	void operator()(float r,float p,float y,float t){ roll=r; pitch=p; yaw=y; throttle=t;}
+	CraftVector() { roll = 0; pitch = 0; yaw = 0; throttle = 0; }
+	void operator()(float r, float p, float y, float t){ roll = r; pitch = p; yaw = y; throttle = t; }
 };
 
 

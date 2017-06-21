@@ -8,14 +8,13 @@
 #include "stm32f4xx_rcc.h"
 #include "stm32f4xx_gpio.h"
 #include "FIFOBuffer.h"
-//#include "GPIO.h"
 
 
 /******************************************************************************************************/
 /****configuration  使用前自行配置****/
-#define SPI_TX_BUFFER_SIZE     64              //SPI BUFFER FIFO SIZE
-#define SPI_RX_BUFFER_SIZE     64              //SPI BUFFER FIFO SIZE
-#define SPI_DMA_TX_BUFFER_SIZE 20               //SPI DMA BUFFER SIZE
+#define SPI_TX_BUFFER_SIZE     200              //SPI BUFFER FIFO SIZE
+#define SPI_RX_BUFFER_SIZE     200              //SPI BUFFER FIFO SIZE
+#define SPI_DMA_TX_BUFFER_SIZE 200              //SPI DMA BUFFER SIZE
 
 /*******************************************************************************************************/
 
@@ -24,14 +23,14 @@ typedef enum
 	SPI_RXNE_IRQ,				//SPI接收缓存区非空中断
 	SPI_TXE_IRQ,				//SPI发送缓冲区空中断
 	SPI_ERR_IRQ					//SPI错误中断
-}SPIIrqType;
+} SPIIrqType;
 
 typedef enum
 {
 	DMA_HT_IRQ,					//DMA传输过半中断
 	DMA_TC_IRQ,					//DMA传输完成中断
 	DMA_TE_IRQ					//DMA错误中断
-}DMAIrqType;
+} DMAIrqType;
 
 class SPI{
 
@@ -61,7 +60,6 @@ private:
 public:
 
 	SPI(SPI_TypeDef* SPI, bool useDMA = false, u8 remap = 0, u8 Prioritygroup = 3, uint8_t preemprionPriority = 7, uint8_t subPriority = 1, u8 dmaPriority = 3);
-	~SPI();
 
 	u8 SPI_RW(u8 dat);
 	bool SendData(uint8_t *pbuffer, uint32_t size);

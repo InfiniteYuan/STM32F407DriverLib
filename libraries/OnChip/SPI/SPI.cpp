@@ -3,9 +3,10 @@
 #include "USART.h"
 #include "Interrupt.h"
 
-SPI::SPI(SPI_TypeDef* SPI, bool useDMA, u8 remap, u8 Prioritygroup, uint8_t preemprionPriority, uint8_t subPriority, u8 dmaPriority) :isBusySend(0){
-
+SPI::SPI(SPI_TypeDef* SPI, bool useDMA, u8 remap, u8 Prioritygroup, uint8_t preemprionPriority, uint8_t subPriority, u8 dmaPriority)
+{
 	SPIx = SPI;
+	isBusySend = 0;
 	mUseDma = useDMA;
 	GPIO_TypeDef* GPIOx;
 	SPI_InitTypeDef SPI_InitStructure;
@@ -39,11 +40,11 @@ SPI::SPI(SPI_TypeDef* SPI, bool useDMA, u8 remap, u8 Prioritygroup, uint8_t pree
 
 #ifdef USE_SPI1_DMA
 		dmaChannel = DMA_Channel_3;
-		mDMA_Streamx = DMA1_Stream1;
-		dmaIrqChannel = DMA1_Stream1_IRQn;
-		dmaGLFlagChannel = DMA_IT_TCIF1 | DMA_IT_HTIF1 | DMA_IT_TEIF1 | DMA_IT_FEIF1;
-		dmaTCFlagChannel = DMA_IT_TCIF1;
-		dmaTEFlagChannel = DMA_IT_TEIF1;
+		mDMA_Streamx = DMA2_Stream3;
+		dmaIrqChannel = DMA2_Stream3_IRQn;
+		dmaGLFlagChannel = DMA_IT_TCIF3 | DMA_IT_HTIF3 | DMA_IT_TEIF3 | DMA_IT_FEIF3;
+		dmaTCFlagChannel = DMA_IT_TCIF3;
+		dmaTEFlagChannel = DMA_IT_TEIF3;
 		pSPI1 = this;
 #endif
 
@@ -109,11 +110,11 @@ SPI::SPI(SPI_TypeDef* SPI, bool useDMA, u8 remap, u8 Prioritygroup, uint8_t pree
 
 #ifdef USE_SPI3_DMA
 		dmaChannel = DMA_Channel_0;
-		mDMA_Streamx = DMA1_Stream7;
-		dmaIrqChannel = DMA1_Stream7_IRQn;
-		dmaGLFlagChannel = DMA_IT_TCIF7 | DMA_IT_HTIF7 | DMA_IT_TEIF7 | DMA_IT_FEIF7;
-		dmaTCFlagChannel = DMA_IT_TCIF7;
-		dmaTEFlagChannel = DMA_IT_TEIF7;
+		mDMA_Streamx = DMA1_Stream5;
+		dmaIrqChannel = DMA1_Stream5_IRQn;
+		dmaGLFlagChannel = DMA_IT_TCIF5 | DMA_IT_HTIF5 | DMA_IT_TEIF5 | DMA_IT_FEIF5;
+		dmaTCFlagChannel = DMA_IT_TCIF5;
+		dmaTEFlagChannel = DMA_IT_TEIF5;
 		pSPI3 = this;
 #endif
 
@@ -123,7 +124,7 @@ SPI::SPI(SPI_TypeDef* SPI, bool useDMA, u8 remap, u8 Prioritygroup, uint8_t pree
 	}
 
 	RCC_AHB1PeriphClockCmd(mGPIORcc, ENABLE);
-	
+
 	/*  GPIO Init  SCKPin MOSIPin MISOPin*/
 	GPIO_InitStructure.GPIO_Pin = SCKPin | MOSIPin | MISOPin;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
@@ -410,14 +411,6 @@ void SPI::ClearSendBuffer(){
 	SPIbufferTx.Clear();
 }
 
-//GPIO& SPI::GetmMISOx(){
-//	return mMISO;
-//}
-
-//GPIO& SPI::GetmMOSIx(){
-//	return mMOSI;
-//}
-
 bool SPI::UseDma(){
 	return mUseDma;
 }
@@ -430,16 +423,16 @@ void SPI::SetCSNPin(u8 value){
 	//	mCSN.SetLevel(value);
 }
 
-SPI::~SPI(){
-	if (SPI1 == SPIx){
-#ifdef USE_SPI1
-		pSPI1 = 0;
-#endif
-	}
-	else if (SPI2 == SPIx){
-#ifdef USE_SPI2
-		pSPI2 = 0;
-#endif
-	}
-}
+//SPI::~SPI(){
+//	if (SPI1 == SPIx){
+//#ifdef USE_SPI1
+//		pSPI1 = 0;
+//#endif
+//	}
+//	else if (SPI2 == SPIx){
+//#ifdef USE_SPI2
+//		pSPI2 = 0;
+//#endif
+//	}
+//}
 

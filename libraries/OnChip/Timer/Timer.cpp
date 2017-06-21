@@ -39,9 +39,9 @@ Timer::Timer(TIM_TypeDef *timer, u16 second, u16 millisecond, u16 microsecond, u
 		timerIrqChannel = TIM5_IRQn;
 	}
 	Conversion(second, millisecond, microsecond);
-//	TIM_InternalClockConfig(timer);
+	//	TIM_InternalClockConfig(timer);
 
-//	TIM_DeInit(timer);//将寄存器重设为缺省值
+	//	TIM_DeInit(timer);//将寄存器重设为缺省值
 	TIM_BaseInitStructure.TIM_Period = mArr - 1; //设置初值
 	TIM_BaseInitStructure.TIM_Prescaler = mPsc - 1;//设置预分频
 	TIM_BaseInitStructure.TIM_ClockDivision = 0;//设置时钟分割

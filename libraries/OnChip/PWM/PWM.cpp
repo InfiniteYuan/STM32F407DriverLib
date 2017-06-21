@@ -78,10 +78,10 @@ void PWM::Initialize(TIM_TypeDef *timx, bool enCh1, bool enCh2, bool enCh3, bool
 	if (!_enCh2) _pin2 = 0;
 	if (!_enCh3) _pin3 = 0;
 	if (!_enCh4) _pin4 = 0;
-	if(_enCh1) GPIO_PinAFConfig(_port,_GPIO_PinSource1,_GPIO_AF); //复用
-	if(_enCh2) GPIO_PinAFConfig(_port,_GPIO_PinSource2,_GPIO_AF); //复用
-	if(_enCh3) GPIO_PinAFConfig(_port,_GPIO_PinSource3,_GPIO_AF); //复用
-	if(_enCh4) GPIO_PinAFConfig(_port,_GPIO_PinSource4,_GPIO_AF); //复用
+	if (_enCh1) GPIO_PinAFConfig(_port, _GPIO_PinSource1, _GPIO_AF); //复用
+	if (_enCh2) GPIO_PinAFConfig(_port, _GPIO_PinSource2, _GPIO_AF); //复用
+	if (_enCh3) GPIO_PinAFConfig(_port, _GPIO_PinSource3, _GPIO_AF); //复用
+	if (_enCh4) GPIO_PinAFConfig(_port, _GPIO_PinSource4, _GPIO_AF); //复用
 	GPIO_InitTypeDef GPIO_InitStructure;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
@@ -130,8 +130,8 @@ void PWM::Initialize(TIM_TypeDef *timx, bool enCh1, bool enCh2, bool enCh3, bool
 	if (_enCh2) TIM_OC2PreloadConfig(_timx, TIM_OCPreload_Enable);
 	if (_enCh3) TIM_OC3PreloadConfig(_timx, TIM_OCPreload_Enable);
 	if (_enCh4) TIM_OC4PreloadConfig(_timx, TIM_OCPreload_Enable);
-	
-	TIM_ARRPreloadConfig(TIM3,ENABLE);//ARPE使能 
+
+	TIM_ARRPreloadConfig(TIM3, ENABLE);//ARPE使能 
 	TIM_Cmd(_timx, ENABLE);
 }
 void PWM::SetDuty(u8 chNum, float duty)

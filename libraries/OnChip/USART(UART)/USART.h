@@ -24,9 +24,9 @@
   */
 /******************************************************************************************************/
 /****configuration，使用前请自行配置****/
-#define USART_TX_BUFFER_SIZE     600              //USART BUFFER FIFO SIZE
-#define USART_RX_BUFFER_SIZE     200              //USART BUFFER FIFO SIZE
-#define USART_DMA_TX_BUFFER_SIZE 200             //USART DMA BUFFER SIZE
+#define USART_TX_BUFFER_SIZE     200              //USART BUFFER FIFO SIZE
+#define USART_RX_BUFFER_SIZE     300              //USART BUFFER FIFO SIZE
+#define USART_DMA_TX_BUFFER_SIZE 500              //USART DMA BUFFER SIZE
 
 /*******************************************************************************************************/
 
@@ -66,9 +66,16 @@ private:
 	void InitGPIO();
 	void InitUSART();
 	void InitNVIC();
+
 public:
-	USART(USART_TypeDef* USARTx, u32 baud, u8 priGroup = 3, u8 prePri = 7, u8 subPri = 1, bool remap = false, u16 parity = USART_Parity_No, u16 wordLen = USART_WordLength_8b, u16 stopBits = USART_StopBits_1);
+	USART(USART_TypeDef* USARTx, u32 baud, bool remap = false, u8 priGroup = 3, u8 prePri = 7, u8 subPri = 1, u16 parity = USART_Parity_No, u16 wordLen = USART_WordLength_8b, u16 stopBits = USART_StopBits_1);
+
 	void Initialize();
+	//////////////////////////
+	///@bief 设置波特率
+	///@param baudRate 波特率大小
+	//////////////////////////
+	void SetBaudRate(uint32_t baudRate);
 
 	virtual bool SendBytes(u8 txData[], u16 size);
 	virtual bool SendByte(u8 data);
@@ -82,6 +89,8 @@ public:
 	virtual u16 RxOverflowSize();
 
 	bool CheckFrame(DataFrame &df);
+	void ClearTxBuf();
+	void ClearRxBuf();
 
 	void IRQ();
 
@@ -89,6 +98,7 @@ public:
 	USART& operator<<(double val);
 	USART& operator<<(const char* pStr);
 	USART& operator<<(u8* pStr);
+	USART& operator<<(const u8* pStr);
 
 #ifdef USE_USART_DMA
 private:

@@ -20,28 +20,28 @@ public:
 	u8 checkSum;
 
 public:
-	DataFrame():header(FRAME_HEADER)                //constructor
+	DataFrame() :header(FRAME_HEADER)                //constructor
 	{
 		isUpdated = false;
 	}
-	
-	bool VerifyCheckCode()    
+
+	bool VerifyCheckCode()
 	{
 		u8 code = header + fnCode + dataLength;
-		for(u8 i=0; i<dataLength; i++)
+		for (u8 i = 0; i < dataLength; i++)
 			code += data[i];
-		if(code == checkSum)
+		if (code == checkSum)
 			return true;
 		else
 			return false;
 	}
 
-	
-	
+
+
 	void CreateCheckCode()
 	{
 		checkSum = header + fnCode + dataLength;
-		for(u8 i=0; i<dataLength; i++)
+		for (u8 i = 0; i < dataLength; i++)
 			checkSum += data[i];
 	}
 	DataFrame& operator=(const DataFrame &df)
@@ -51,7 +51,7 @@ public:
 		dataLength = df.dataLength;
 		isUpdated = df.isUpdated;
 		checkSum = df.checkSum;
-		for(u8 i=0; i<dataLength; i++)
+		for (u8 i = 0; i < dataLength; i++)
 			data[i] = df.data[i];
 		return *this;
 	}
@@ -86,21 +86,21 @@ public:
 //#define           FC_GET_IMU_ANG      0x12    //function code 17: PC to MCU, get imu angle
 #define 	MAX_FN_CODE 	0x0C
 
-const u8 DATA_LENGTH[MAX_FN_CODE+1][2] = 
+const u8 DATA_LENGTH[MAX_FN_CODE + 1][2] =
 {
-	3,	0,
-	36,	0,
+	3, 0,
+	36, 0,
 	41, 0,
-	16,	0,
-	41,	1,
-	1,  50,
-	0,  3,
-	0,  12,
-	0,  12,
-	0,  12,
-	0,  12,
-	0,  12,
-	0,  12
+	16, 0,
+	41, 1,
+	1, 50,
+	0, 3,
+	0, 12,
+	0, 12,
+	0, 12,
+	0, 12,
+	0, 12,
+	0, 12
 //	4,			//data length of function code 00: motor setting velocity, 4 bytes, 0.0 ~ 100.0
 //	4*4,			//data length of function code 01: motor current velocity  4 bytes, rotate / second
 //	4,			//data length of function code 02: get Weighing machine value  >8000000

@@ -1,18 +1,14 @@
 #include "ADC.h"
 
-//  ADC Table Initialize:           CH0           CH1        CH2         CH3         CH4         CH5         CH6         CH7         CH8         CH9
-u16  MADC::_pin[MAX_ADC_CHANNEL] = { GPIO_Pin_0, GPIO_Pin_1, GPIO_Pin_2, GPIO_Pin_3, GPIO_Pin_4, GPIO_Pin_5, GPIO_Pin_6, GPIO_Pin_7, GPIO_Pin_0, GPIO_Pin_1 };
+//  ADC Table Initialize:           CH0           CH1        CH2         CH3         CH4         CH5         CH6         CH7         CH8         CH9					CH10				CH11				CH12				CH13					CH14			CH15
+u16  MADC::_pin[MAX_ADC_CHANNEL] = { GPIO_Pin_0, GPIO_Pin_1, GPIO_Pin_2, GPIO_Pin_3, GPIO_Pin_4, GPIO_Pin_5, GPIO_Pin_6, GPIO_Pin_7, GPIO_Pin_0, GPIO_Pin_1, GPIO_Pin_0, GPIO_Pin_1, GPIO_Pin_2, GPIO_Pin_13, GPIO_Pin_4, GPIO_Pin_5 };
 bool MADC::_enCh[MAX_ADC_CHANNEL] = { false, false, false, false, false, false, false, false, false, false };
 u8   MADC::_chMap[MAX_ADC_CHANNEL] = { 0 };     //map channel number to the index of _adcValue
 u16  MADC::_adcValue[MAX_ADC_CHANNEL] = { 0 }; //adc value for each channel
 
 //constructor: ADC and DMA initialize
-MADC::MADC(u8 ch0Num, u8 ch1Num, u8 ch2Num, u8 ch3Num, u8 ch4Num, u8 ch5Num, u8 ch6Num, u8 ch7Num, u8 ch8Num, u8 ch9Num)
+MADC::MADC(u8 ch0Num, u8 ch1Num, u8 ch2Num, u8 ch3Num, u8 ch4Num, u8 ch5Num, u8 ch6Num, u8 ch7Num, u8 ch8Num, u8 ch9Num, u8 ch10Num, u8 ch11Num, u8 ch12Num, u8 ch13Num, u8 ch14Num, u8 ch15Num)
 {
-	//	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1,ENABLE);		//ADC1 clock
-	//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA,ENABLE);	//open the PinA clock
-	//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB,ENABLE);
-	//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);   
 	//Step 1: set adc channel enable flag
 	if (ch0Num < MAX_ADC_CHANNEL) _enCh[ch0Num] = true;
 	if (ch1Num < MAX_ADC_CHANNEL) _enCh[ch1Num] = true;
@@ -24,9 +20,15 @@ MADC::MADC(u8 ch0Num, u8 ch1Num, u8 ch2Num, u8 ch3Num, u8 ch4Num, u8 ch5Num, u8 
 	if (ch7Num < MAX_ADC_CHANNEL) _enCh[ch7Num] = true;
 	if (ch8Num < MAX_ADC_CHANNEL) _enCh[ch8Num] = true;
 	if (ch9Num < MAX_ADC_CHANNEL) _enCh[ch9Num] = true;
+	if (ch10Num < MAX_ADC_CHANNEL) _enCh[ch10Num] = true;
+	if (ch11Num < MAX_ADC_CHANNEL) _enCh[ch11Num] = true;
+	if (ch12Num < MAX_ADC_CHANNEL) _enCh[ch12Num] = true;
+	if (ch13Num < MAX_ADC_CHANNEL) _enCh[ch13Num] = true;
+	if (ch14Num < MAX_ADC_CHANNEL) _enCh[ch14Num] = true;
+	if (ch15Num < MAX_ADC_CHANNEL) _enCh[ch15Num] = true;
 
 	//Step 2: initialize rcc and gpio
-	u16 pinA = 0, pinB = 0, chCnt = 0;
+	u16 pinA = 0, pinB = 0, pinC = 0, chCnt = 0;
 
 	for (int i = 0; i < MAX_ADC_CHANNEL; i++)
 	{
@@ -34,7 +36,8 @@ MADC::MADC(u8 ch0Num, u8 ch1Num, u8 ch2Num, u8 ch3Num, u8 ch4Num, u8 ch5Num, u8 
 		{
 			chCnt++;                 //count the total number of enabled adc channel
 			if (i < 8)	pinA |= _pin[i]; //all enabled adc pin in GPIOA
-			else    pinB |= _pin[i]; //all enabled adc pin in GPIOB
+			else if ((i > 7) && (i < 10))    pinB |= _pin[i]; //all enabled adc pin in GPIOB
+			else pinC |= _pin[i];
 		}
 	}
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -52,6 +55,12 @@ MADC::MADC(u8 ch0Num, u8 ch1Num, u8 ch2Num, u8 ch3Num, u8 ch4Num, u8 ch5Num, u8 
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
 		GPIO_InitStructure.GPIO_Pin = pinB;
 		GPIO_Init(GPIOB, &GPIO_InitStructure);
+	}
+	if (pinC)
+	{
+		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
+		GPIO_InitStructure.GPIO_Pin = pinC;
+		GPIO_Init(GPIOC, &GPIO_InitStructure);
 	}
 
 	//Step 3: Initialize DMA
@@ -120,6 +129,3 @@ double MADC::operator[](u8 chNum)
 	else             //adc channel not enabled
 		return 0;
 }
-
-
-

@@ -1,6 +1,6 @@
 #ifndef _F103_PWM_H_
 #define _F103_PWM_H_
- 
+
 #include "stm32f4xx.h"
 
 class PWM
@@ -28,12 +28,12 @@ private:
 	u32 _period;          //period
 	u16 _prescaler;       //prescaler
 public:
-	PWM(TIM_TypeDef *timx,bool enCh1,bool enCh2,bool enCh3, bool enCh4, u16 frq);
-	void Initialize(TIM_TypeDef *timx,bool enCh1,bool enCh2,bool enCh3, bool enCh4, u16 frq);
-	void SetDuty(float ch1,float ch2, float ch3, float ch4=0);
-	void SetDuty(u8 chNum,float ch2);
+	PWM(TIM_TypeDef *timx, bool enCh1, bool enCh2, bool enCh3, bool enCh4, u16 frq);
+	void Initialize(TIM_TypeDef *timx, bool enCh1, bool enCh2, bool enCh3, bool enCh4, u16 frq);
+	void SetDuty(float ch1, float ch2, float ch3, float ch4 = 0);
+	void SetDuty(u8 chNum, float ch2);
 };
- 
 
- 
+
+
 #endif
